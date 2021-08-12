@@ -173,6 +173,11 @@ class FPN(BaseModule):
             for i, lateral_conv in enumerate(self.lateral_convs)
         ]
 
+        print('========fpn laterals start=====')
+        for l in laterals:
+            print('laterals: ', l.shape, l.abs().mean())
+        print('========fpn laterals end=====')
+
         # build top-down path
         used_backbone_levels = len(laterals)
         for i in range(used_backbone_levels - 1, 0, -1):
@@ -191,6 +196,12 @@ class FPN(BaseModule):
         outs = [
             self.fpn_convs[i](laterals[i]) for i in range(used_backbone_levels)
         ]
+
+        print('========fpn output start=====')
+        for l in outs:
+            print('fpn output: ', l.shape, l.abs().mean())
+        print('========fpn output end=====')
+
         # part 2: add extra levels
         if self.num_outs > len(outs):
             # use max pool to get more levels on top of outputs

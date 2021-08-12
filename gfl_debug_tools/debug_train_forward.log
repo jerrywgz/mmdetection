@@ -1,0 +1,1537 @@
+2021-08-10 08:32:03,450 - mmdet - INFO - Environment info:
+------------------------------------------------------------
+sys.platform: linux
+Python: 3.7.0 (default, Nov 13 2020, 04:44:14) [GCC 8.2.0]
+CUDA available: True
+GPU 0: Tesla P40
+CUDA_HOME: /usr/local/cuda
+NVCC: Cuda compilation tools, release 10.2, V10.2.89
+GCC: gcc (GCC) 8.2.0
+PyTorch: 1.7.0
+PyTorch compiling details: PyTorch built with:
+  - GCC 7.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v1.6.0 (Git Hash 5ef631a030a6f73131c77892041042805a06064f)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 10.2
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75
+  - CuDNN 7.6.5
+  - Magma 2.5.2
+  - Build settings: BLAS=MKL, BUILD_TYPE=Release, CXX_FLAGS= -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DUSE_VULKAN_WRAPPER -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function -Wno-unused-result -Wno-unused-local-typedefs -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Wno-stringop-overflow, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, USE_CUDA=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, 
+
+TorchVision: 0.8.0
+OpenCV: 4.5.3
+MMCV: 1.3.10
+MMCV Compiler: GCC 7.3
+MMCV CUDA Compiler: 10.2
+MMDetection: 2.13.0+102f379
+------------------------------------------------------------
+
+2021-08-10 08:32:04,699 - mmdet - INFO - Distributed training: False
+2021-08-10 08:32:05,965 - mmdet - INFO - Config:
+dataset_type = 'CocoDataset'
+data_root = '/paddle/dataset/coco/'
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations', with_bbox=True),
+    dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
+    dict(type='RandomFlip', flip_ratio=0.0),
+    dict(
+        type='Normalize',
+        mean=[123.675, 116.28, 103.53],
+        std=[58.395, 57.12, 57.375],
+        to_rgb=True),
+    dict(type='Pad', size_divisor=32),
+    dict(type='DefaultFormatBundle'),
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=(1333, 800),
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img'])
+        ])
+]
+data = dict(
+    samples_per_gpu=1,
+    workers_per_gpu=2,
+    train=dict(
+        type='CocoDataset',
+        ann_file=
+        '/paddle/dataset/coco/annotations/instances_val2017_debug_139.json',
+        img_prefix='/paddle/dataset/coco/val2017/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
+            dict(type='RandomFlip', flip_ratio=0.0),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32),
+            dict(type='DefaultFormatBundle'),
+            dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels'])
+        ]),
+    val=dict(
+        type='CocoDataset',
+        ann_file=
+        '/paddle/dataset/coco/annotations/instances_val2017_debug_139.json',
+        img_prefix='/paddle/dataset/coco/val2017/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1333, 800),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]),
+    test=dict(
+        type='CocoDataset',
+        ann_file=
+        '/paddle/dataset/coco/annotations/instances_val2017_debug_139.json',
+        img_prefix='/paddle/dataset/coco/val2017/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1333, 800),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]))
+evaluation = dict(interval=1, metric='bbox')
+optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)
+optimizer_config = dict(grad_clip=None)
+lr_config = dict(
+    policy='step',
+    warmup='linear',
+    warmup_iters=500,
+    warmup_ratio=0.1,
+    step=[8, 11])
+runner = dict(type='EpochBasedRunner', max_epochs=5)
+checkpoint_config = dict(interval=1)
+log_config = dict(interval=1, hooks=[dict(type='TextLoggerHook')])
+custom_hooks = [dict(type='NumClassCheckHook')]
+dist_params = dict(backend='nccl')
+log_level = 'INFO'
+load_from = '../PaddleDetection/gfl_debug_tools/gfl_r50_fpn_1x_coco_20200629_121244-25944287.pth'
+resume_from = None
+workflow = [('train', 1)]
+model = dict(
+    type='GFL',
+    pretrained=
+    '../PaddleDetection/gfl_debug_tools/gfl_r50_fpn_1x_coco_20200629_121244-25944287.pth',
+    backbone=dict(
+        type='ResNet',
+        depth=50,
+        num_stages=4,
+        out_indices=(0, 1, 2, 3),
+        frozen_stages=1,
+        norm_cfg=dict(type='BN', requires_grad=True),
+        norm_eval=True,
+        style='pytorch'),
+    neck=dict(
+        type='FPN',
+        in_channels=[256, 512, 1024, 2048],
+        out_channels=256,
+        start_level=1,
+        add_extra_convs='on_output',
+        num_outs=5),
+    bbox_head=dict(
+        type='GFLHead',
+        num_classes=80,
+        in_channels=256,
+        stacked_convs=4,
+        feat_channels=256,
+        anchor_generator=dict(
+            type='AnchorGenerator',
+            ratios=[1.0],
+            octave_base_scale=8,
+            scales_per_octave=1,
+            strides=[8, 16, 32, 64, 128]),
+        loss_cls=dict(
+            type='QualityFocalLoss',
+            use_sigmoid=True,
+            beta=2.0,
+            loss_weight=1.0),
+        loss_dfl=dict(type='DistributionFocalLoss', loss_weight=0.25),
+        reg_max=16,
+        loss_bbox=dict(type='GIoULoss', loss_weight=2.0)),
+    train_cfg=dict(
+        assigner=dict(type='ATSSAssigner', topk=9),
+        allowed_border=-1,
+        pos_weight=-1,
+        debug=False),
+    test_cfg=dict(
+        nms_pre=1000,
+        min_bbox_size=0,
+        score_thr=0.05,
+        nms=dict(type='nms', iou_threshold=0.6),
+        max_per_img=100))
+work_dir = './work_dirs/gfl_r50_fpn_1x_coco'
+gpu_ids = range(0, 1)
+
+/paddle/mmdetection/mmdet/models/detectors/single_stage.py:28: UserWarning: DeprecationWarning: pretrained is deprecated, please use "init_cfg" instead
+  warnings.warn('DeprecationWarning: pretrained is deprecated, '
+/paddle/mmdetection/mmdet/models/backbones/resnet.py:400: UserWarning: DeprecationWarning: pretrained is deprecated, please use "init_cfg" instead
+  warnings.warn('DeprecationWarning: pretrained is deprecated, '
+/paddle/mmdetection/mmdet/core/anchor/builder.py:16: UserWarning: ``build_anchor_generator`` would be deprecated soon, please use ``build_prior_generator`` 
+  '``build_anchor_generator`` would be deprecated soon, please use '
+2021-08-10 08:32:06,759 - mmdet - INFO - initialize ResNet with init_cfg {'type': 'Pretrained', 'checkpoint': '../PaddleDetection/gfl_debug_tools/gfl_r50_fpn_1x_coco_20200629_121244-25944287.pth'}
+2021-08-10 08:32:06,759 - mmcv - INFO - load model from: ../PaddleDetection/gfl_debug_tools/gfl_r50_fpn_1x_coco_20200629_121244-25944287.pth
+2021-08-10 08:32:06,759 - mmcv - INFO - Use load_from_local loader
+2021-08-10 08:32:06,893 - mmcv - WARNING - The model and loaded state dict do not match exactly
+
+unexpected key in source state_dict: backbone.conv1.weight, backbone.bn1.weight, backbone.bn1.bias, backbone.bn1.running_mean, backbone.bn1.running_var, backbone.bn1.num_batches_tracked, backbone.layer1.0.conv1.weight, backbone.layer1.0.bn1.weight, backbone.layer1.0.bn1.bias, backbone.layer1.0.bn1.running_mean, backbone.layer1.0.bn1.running_var, backbone.layer1.0.bn1.num_batches_tracked, backbone.layer1.0.conv2.weight, backbone.layer1.0.bn2.weight, backbone.layer1.0.bn2.bias, backbone.layer1.0.bn2.running_mean, backbone.layer1.0.bn2.running_var, backbone.layer1.0.bn2.num_batches_tracked, backbone.layer1.0.conv3.weight, backbone.layer1.0.bn3.weight, backbone.layer1.0.bn3.bias, backbone.layer1.0.bn3.running_mean, backbone.layer1.0.bn3.running_var, backbone.layer1.0.bn3.num_batches_tracked, backbone.layer1.0.downsample.0.weight, backbone.layer1.0.downsample.1.weight, backbone.layer1.0.downsample.1.bias, backbone.layer1.0.downsample.1.running_mean, backbone.layer1.0.downsample.1.running_var, backbone.layer1.0.downsample.1.num_batches_tracked, backbone.layer1.1.conv1.weight, backbone.layer1.1.bn1.weight, backbone.layer1.1.bn1.bias, backbone.layer1.1.bn1.running_mean, backbone.layer1.1.bn1.running_var, backbone.layer1.1.bn1.num_batches_tracked, backbone.layer1.1.conv2.weight, backbone.layer1.1.bn2.weight, backbone.layer1.1.bn2.bias, backbone.layer1.1.bn2.running_mean, backbone.layer1.1.bn2.running_var, backbone.layer1.1.bn2.num_batches_tracked, backbone.layer1.1.conv3.weight, backbone.layer1.1.bn3.weight, backbone.layer1.1.bn3.bias, backbone.layer1.1.bn3.running_mean, backbone.layer1.1.bn3.running_var, backbone.layer1.1.bn3.num_batches_tracked, backbone.layer1.2.conv1.weight, backbone.layer1.2.bn1.weight, backbone.layer1.2.bn1.bias, backbone.layer1.2.bn1.running_mean, backbone.layer1.2.bn1.running_var, backbone.layer1.2.bn1.num_batches_tracked, backbone.layer1.2.conv2.weight, backbone.layer1.2.bn2.weight, backbone.layer1.2.bn2.bias, backbone.layer1.2.bn2.running_mean, backbone.layer1.2.bn2.running_var, backbone.layer1.2.bn2.num_batches_tracked, backbone.layer1.2.conv3.weight, backbone.layer1.2.bn3.weight, backbone.layer1.2.bn3.bias, backbone.layer1.2.bn3.running_mean, backbone.layer1.2.bn3.running_var, backbone.layer1.2.bn3.num_batches_tracked, backbone.layer2.0.conv1.weight, backbone.layer2.0.bn1.weight, backbone.layer2.0.bn1.bias, backbone.layer2.0.bn1.running_mean, backbone.layer2.0.bn1.running_var, backbone.layer2.0.bn1.num_batches_tracked, backbone.layer2.0.conv2.weight, backbone.layer2.0.bn2.weight, backbone.layer2.0.bn2.bias, backbone.layer2.0.bn2.running_mean, backbone.layer2.0.bn2.running_var, backbone.layer2.0.bn2.num_batches_tracked, backbone.layer2.0.conv3.weight, backbone.layer2.0.bn3.weight, backbone.layer2.0.bn3.bias, backbone.layer2.0.bn3.running_mean, backbone.layer2.0.bn3.running_var, backbone.layer2.0.bn3.num_batches_tracked, backbone.layer2.0.downsample.0.weight, backbone.layer2.0.downsample.1.weight, backbone.layer2.0.downsample.1.bias, backbone.layer2.0.downsample.1.running_mean, backbone.layer2.0.downsample.1.running_var, backbone.layer2.0.downsample.1.num_batches_tracked, backbone.layer2.1.conv1.weight, backbone.layer2.1.bn1.weight, backbone.layer2.1.bn1.bias, backbone.layer2.1.bn1.running_mean, backbone.layer2.1.bn1.running_var, backbone.layer2.1.bn1.num_batches_tracked, backbone.layer2.1.conv2.weight, backbone.layer2.1.bn2.weight, backbone.layer2.1.bn2.bias, backbone.layer2.1.bn2.running_mean, backbone.layer2.1.bn2.running_var, backbone.layer2.1.bn2.num_batches_tracked, backbone.layer2.1.conv3.weight, backbone.layer2.1.bn3.weight, backbone.layer2.1.bn3.bias, backbone.layer2.1.bn3.running_mean, backbone.layer2.1.bn3.running_var, backbone.layer2.1.bn3.num_batches_tracked, backbone.layer2.2.conv1.weight, backbone.layer2.2.bn1.weight, backbone.layer2.2.bn1.bias, backbone.layer2.2.bn1.running_mean, backbone.layer2.2.bn1.running_var, backbone.layer2.2.bn1.num_batches_tracked, backbone.layer2.2.conv2.weight, backbone.layer2.2.bn2.weight, backbone.layer2.2.bn2.bias, backbone.layer2.2.bn2.running_mean, backbone.layer2.2.bn2.running_var, backbone.layer2.2.bn2.num_batches_tracked, backbone.layer2.2.conv3.weight, backbone.layer2.2.bn3.weight, backbone.layer2.2.bn3.bias, backbone.layer2.2.bn3.running_mean, backbone.layer2.2.bn3.running_var, backbone.layer2.2.bn3.num_batches_tracked, backbone.layer2.3.conv1.weight, backbone.layer2.3.bn1.weight, backbone.layer2.3.bn1.bias, backbone.layer2.3.bn1.running_mean, backbone.layer2.3.bn1.running_var, backbone.layer2.3.bn1.num_batches_tracked, backbone.layer2.3.conv2.weight, backbone.layer2.3.bn2.weight, backbone.layer2.3.bn2.bias, backbone.layer2.3.bn2.running_mean, backbone.layer2.3.bn2.running_var, backbone.layer2.3.bn2.num_batches_tracked, backbone.layer2.3.conv3.weight, backbone.layer2.3.bn3.weight, backbone.layer2.3.bn3.bias, backbone.layer2.3.bn3.running_mean, backbone.layer2.3.bn3.running_var, backbone.layer2.3.bn3.num_batches_tracked, backbone.layer3.0.conv1.weight, backbone.layer3.0.bn1.weight, backbone.layer3.0.bn1.bias, backbone.layer3.0.bn1.running_mean, backbone.layer3.0.bn1.running_var, backbone.layer3.0.bn1.num_batches_tracked, backbone.layer3.0.conv2.weight, backbone.layer3.0.bn2.weight, backbone.layer3.0.bn2.bias, backbone.layer3.0.bn2.running_mean, backbone.layer3.0.bn2.running_var, backbone.layer3.0.bn2.num_batches_tracked, backbone.layer3.0.conv3.weight, backbone.layer3.0.bn3.weight, backbone.layer3.0.bn3.bias, backbone.layer3.0.bn3.running_mean, backbone.layer3.0.bn3.running_var, backbone.layer3.0.bn3.num_batches_tracked, backbone.layer3.0.downsample.0.weight, backbone.layer3.0.downsample.1.weight, backbone.layer3.0.downsample.1.bias, backbone.layer3.0.downsample.1.running_mean, backbone.layer3.0.downsample.1.running_var, backbone.layer3.0.downsample.1.num_batches_tracked, backbone.layer3.1.conv1.weight, backbone.layer3.1.bn1.weight, backbone.layer3.1.bn1.bias, backbone.layer3.1.bn1.running_mean, backbone.layer3.1.bn1.running_var, backbone.layer3.1.bn1.num_batches_tracked, backbone.layer3.1.conv2.weight, backbone.layer3.1.bn2.weight, backbone.layer3.1.bn2.bias, backbone.layer3.1.bn2.running_mean, backbone.layer3.1.bn2.running_var, backbone.layer3.1.bn2.num_batches_tracked, backbone.layer3.1.conv3.weight, backbone.layer3.1.bn3.weight, backbone.layer3.1.bn3.bias, backbone.layer3.1.bn3.running_mean, backbone.layer3.1.bn3.running_var, backbone.layer3.1.bn3.num_batches_tracked, backbone.layer3.2.conv1.weight, backbone.layer3.2.bn1.weight, backbone.layer3.2.bn1.bias, backbone.layer3.2.bn1.running_mean, backbone.layer3.2.bn1.running_var, backbone.layer3.2.bn1.num_batches_tracked, backbone.layer3.2.conv2.weight, backbone.layer3.2.bn2.weight, backbone.layer3.2.bn2.bias, backbone.layer3.2.bn2.running_mean, backbone.layer3.2.bn2.running_var, backbone.layer3.2.bn2.num_batches_tracked, backbone.layer3.2.conv3.weight, backbone.layer3.2.bn3.weight, backbone.layer3.2.bn3.bias, backbone.layer3.2.bn3.running_mean, backbone.layer3.2.bn3.running_var, backbone.layer3.2.bn3.num_batches_tracked, backbone.layer3.3.conv1.weight, backbone.layer3.3.bn1.weight, backbone.layer3.3.bn1.bias, backbone.layer3.3.bn1.running_mean, backbone.layer3.3.bn1.running_var, backbone.layer3.3.bn1.num_batches_tracked, backbone.layer3.3.conv2.weight, backbone.layer3.3.bn2.weight, backbone.layer3.3.bn2.bias, backbone.layer3.3.bn2.running_mean, backbone.layer3.3.bn2.running_var, backbone.layer3.3.bn2.num_batches_tracked, backbone.layer3.3.conv3.weight, backbone.layer3.3.bn3.weight, backbone.layer3.3.bn3.bias, backbone.layer3.3.bn3.running_mean, backbone.layer3.3.bn3.running_var, backbone.layer3.3.bn3.num_batches_tracked, backbone.layer3.4.conv1.weight, backbone.layer3.4.bn1.weight, backbone.layer3.4.bn1.bias, backbone.layer3.4.bn1.running_mean, backbone.layer3.4.bn1.running_var, backbone.layer3.4.bn1.num_batches_tracked, backbone.layer3.4.conv2.weight, backbone.layer3.4.bn2.weight, backbone.layer3.4.bn2.bias, backbone.layer3.4.bn2.running_mean, backbone.layer3.4.bn2.running_var, backbone.layer3.4.bn2.num_batches_tracked, backbone.layer3.4.conv3.weight, backbone.layer3.4.bn3.weight, backbone.layer3.4.bn3.bias, backbone.layer3.4.bn3.running_mean, backbone.layer3.4.bn3.running_var, backbone.layer3.4.bn3.num_batches_tracked, backbone.layer3.5.conv1.weight, backbone.layer3.5.bn1.weight, backbone.layer3.5.bn1.bias, backbone.layer3.5.bn1.running_mean, backbone.layer3.5.bn1.running_var, backbone.layer3.5.bn1.num_batches_tracked, backbone.layer3.5.conv2.weight, backbone.layer3.5.bn2.weight, backbone.layer3.5.bn2.bias, backbone.layer3.5.bn2.running_mean, backbone.layer3.5.bn2.running_var, backbone.layer3.5.bn2.num_batches_tracked, backbone.layer3.5.conv3.weight, backbone.layer3.5.bn3.weight, backbone.layer3.5.bn3.bias, backbone.layer3.5.bn3.running_mean, backbone.layer3.5.bn3.running_var, backbone.layer3.5.bn3.num_batches_tracked, backbone.layer4.0.conv1.weight, backbone.layer4.0.bn1.weight, backbone.layer4.0.bn1.bias, backbone.layer4.0.bn1.running_mean, backbone.layer4.0.bn1.running_var, backbone.layer4.0.bn1.num_batches_tracked, backbone.layer4.0.conv2.weight, backbone.layer4.0.bn2.weight, backbone.layer4.0.bn2.bias, backbone.layer4.0.bn2.running_mean, backbone.layer4.0.bn2.running_var, backbone.layer4.0.bn2.num_batches_tracked, backbone.layer4.0.conv3.weight, backbone.layer4.0.bn3.weight, backbone.layer4.0.bn3.bias, backbone.layer4.0.bn3.running_mean, backbone.layer4.0.bn3.running_var, backbone.layer4.0.bn3.num_batches_tracked, backbone.layer4.0.downsample.0.weight, backbone.layer4.0.downsample.1.weight, backbone.layer4.0.downsample.1.bias, backbone.layer4.0.downsample.1.running_mean, backbone.layer4.0.downsample.1.running_var, backbone.layer4.0.downsample.1.num_batches_tracked, backbone.layer4.1.conv1.weight, backbone.layer4.1.bn1.weight, backbone.layer4.1.bn1.bias, backbone.layer4.1.bn1.running_mean, backbone.layer4.1.bn1.running_var, backbone.layer4.1.bn1.num_batches_tracked, backbone.layer4.1.conv2.weight, backbone.layer4.1.bn2.weight, backbone.layer4.1.bn2.bias, backbone.layer4.1.bn2.running_mean, backbone.layer4.1.bn2.running_var, backbone.layer4.1.bn2.num_batches_tracked, backbone.layer4.1.conv3.weight, backbone.layer4.1.bn3.weight, backbone.layer4.1.bn3.bias, backbone.layer4.1.bn3.running_mean, backbone.layer4.1.bn3.running_var, backbone.layer4.1.bn3.num_batches_tracked, backbone.layer4.2.conv1.weight, backbone.layer4.2.bn1.weight, backbone.layer4.2.bn1.bias, backbone.layer4.2.bn1.running_mean, backbone.layer4.2.bn1.running_var, backbone.layer4.2.bn1.num_batches_tracked, backbone.layer4.2.conv2.weight, backbone.layer4.2.bn2.weight, backbone.layer4.2.bn2.bias, backbone.layer4.2.bn2.running_mean, backbone.layer4.2.bn2.running_var, backbone.layer4.2.bn2.num_batches_tracked, backbone.layer4.2.conv3.weight, backbone.layer4.2.bn3.weight, backbone.layer4.2.bn3.bias, backbone.layer4.2.bn3.running_mean, backbone.layer4.2.bn3.running_var, backbone.layer4.2.bn3.num_batches_tracked, neck.lateral_convs.0.conv.weight, neck.lateral_convs.0.conv.bias, neck.lateral_convs.1.conv.weight, neck.lateral_convs.1.conv.bias, neck.lateral_convs.2.conv.weight, neck.lateral_convs.2.conv.bias, neck.fpn_convs.0.conv.weight, neck.fpn_convs.0.conv.bias, neck.fpn_convs.1.conv.weight, neck.fpn_convs.1.conv.bias, neck.fpn_convs.2.conv.weight, neck.fpn_convs.2.conv.bias, neck.fpn_convs.3.conv.weight, neck.fpn_convs.3.conv.bias, neck.fpn_convs.4.conv.weight, neck.fpn_convs.4.conv.bias, bbox_head.cls_convs.0.conv.weight, bbox_head.cls_convs.0.gn.weight, bbox_head.cls_convs.0.gn.bias, bbox_head.cls_convs.1.conv.weight, bbox_head.cls_convs.1.gn.weight, bbox_head.cls_convs.1.gn.bias, bbox_head.cls_convs.2.conv.weight, bbox_head.cls_convs.2.gn.weight, bbox_head.cls_convs.2.gn.bias, bbox_head.cls_convs.3.conv.weight, bbox_head.cls_convs.3.gn.weight, bbox_head.cls_convs.3.gn.bias, bbox_head.reg_convs.0.conv.weight, bbox_head.reg_convs.0.gn.weight, bbox_head.reg_convs.0.gn.bias, bbox_head.reg_convs.1.conv.weight, bbox_head.reg_convs.1.gn.weight, bbox_head.reg_convs.1.gn.bias, bbox_head.reg_convs.2.conv.weight, bbox_head.reg_convs.2.gn.weight, bbox_head.reg_convs.2.gn.bias, bbox_head.reg_convs.3.conv.weight, bbox_head.reg_convs.3.gn.weight, bbox_head.reg_convs.3.gn.bias, bbox_head.gfl_cls.weight, bbox_head.gfl_cls.bias, bbox_head.gfl_reg.weight, bbox_head.gfl_reg.bias, bbox_head.scales.0.scale, bbox_head.scales.1.scale, bbox_head.scales.2.scale, bbox_head.scales.3.scale, bbox_head.scales.4.scale, bbox_head.integral.project
+
+missing keys in source state_dict: conv1.weight, bn1.weight, bn1.bias, bn1.running_mean, bn1.running_var, layer1.0.conv1.weight, layer1.0.bn1.weight, layer1.0.bn1.bias, layer1.0.bn1.running_mean, layer1.0.bn1.running_var, layer1.0.conv2.weight, layer1.0.bn2.weight, layer1.0.bn2.bias, layer1.0.bn2.running_mean, layer1.0.bn2.running_var, layer1.0.conv3.weight, layer1.0.bn3.weight, layer1.0.bn3.bias, layer1.0.bn3.running_mean, layer1.0.bn3.running_var, layer1.0.downsample.0.weight, layer1.0.downsample.1.weight, layer1.0.downsample.1.bias, layer1.0.downsample.1.running_mean, layer1.0.downsample.1.running_var, layer1.1.conv1.weight, layer1.1.bn1.weight, layer1.1.bn1.bias, layer1.1.bn1.running_mean, layer1.1.bn1.running_var, layer1.1.conv2.weight, layer1.1.bn2.weight, layer1.1.bn2.bias, layer1.1.bn2.running_mean, layer1.1.bn2.running_var, layer1.1.conv3.weight, layer1.1.bn3.weight, layer1.1.bn3.bias, layer1.1.bn3.running_mean, layer1.1.bn3.running_var, layer1.2.conv1.weight, layer1.2.bn1.weight, layer1.2.bn1.bias, layer1.2.bn1.running_mean, layer1.2.bn1.running_var, layer1.2.conv2.weight, layer1.2.bn2.weight, layer1.2.bn2.bias, layer1.2.bn2.running_mean, layer1.2.bn2.running_var, layer1.2.conv3.weight, layer1.2.bn3.weight, layer1.2.bn3.bias, layer1.2.bn3.running_mean, layer1.2.bn3.running_var, layer2.0.conv1.weight, layer2.0.bn1.weight, layer2.0.bn1.bias, layer2.0.bn1.running_mean, layer2.0.bn1.running_var, layer2.0.conv2.weight, layer2.0.bn2.weight, layer2.0.bn2.bias, layer2.0.bn2.running_mean, layer2.0.bn2.running_var, layer2.0.conv3.weight, layer2.0.bn3.weight, layer2.0.bn3.bias, layer2.0.bn3.running_mean, layer2.0.bn3.running_var, layer2.0.downsample.0.weight, layer2.0.downsample.1.weight, layer2.0.downsample.1.bias, layer2.0.downsample.1.running_mean, layer2.0.downsample.1.running_var, layer2.1.conv1.weight, layer2.1.bn1.weight, layer2.1.bn1.bias, layer2.1.bn1.running_mean, layer2.1.bn1.running_var, layer2.1.conv2.weight, layer2.1.bn2.weight, layer2.1.bn2.bias, layer2.1.bn2.running_mean, layer2.1.bn2.running_var, layer2.1.conv3.weight, layer2.1.bn3.weight, layer2.1.bn3.bias, layer2.1.bn3.running_mean, layer2.1.bn3.running_var, layer2.2.conv1.weight, layer2.2.bn1.weight, layer2.2.bn1.bias, layer2.2.bn1.running_mean, layer2.2.bn1.running_var, layer2.2.conv2.weight, layer2.2.bn2.weight, layer2.2.bn2.bias, layer2.2.bn2.running_mean, layer2.2.bn2.running_var, layer2.2.conv3.weight, layer2.2.bn3.weight, layer2.2.bn3.bias, layer2.2.bn3.running_mean, layer2.2.bn3.running_var, layer2.3.conv1.weight, layer2.3.bn1.weight, layer2.3.bn1.bias, layer2.3.bn1.running_mean, layer2.3.bn1.running_var, layer2.3.conv2.weight, layer2.3.bn2.weight, layer2.3.bn2.bias, layer2.3.bn2.running_mean, layer2.3.bn2.running_var, layer2.3.conv3.weight, layer2.3.bn3.weight, layer2.3.bn3.bias, layer2.3.bn3.running_mean, layer2.3.bn3.running_var, layer3.0.conv1.weight, layer3.0.bn1.weight, layer3.0.bn1.bias, layer3.0.bn1.running_mean, layer3.0.bn1.running_var, layer3.0.conv2.weight, layer3.0.bn2.weight, layer3.0.bn2.bias, layer3.0.bn2.running_mean, layer3.0.bn2.running_var, layer3.0.conv3.weight, layer3.0.bn3.weight, layer3.0.bn3.bias, layer3.0.bn3.running_mean, layer3.0.bn3.running_var, layer3.0.downsample.0.weight, layer3.0.downsample.1.weight, layer3.0.downsample.1.bias, layer3.0.downsample.1.running_mean, layer3.0.downsample.1.running_var, layer3.1.conv1.weight, layer3.1.bn1.weight, layer3.1.bn1.bias, layer3.1.bn1.running_mean, layer3.1.bn1.running_var, layer3.1.conv2.weight, layer3.1.bn2.weight, layer3.1.bn2.bias, layer3.1.bn2.running_mean, layer3.1.bn2.running_var, layer3.1.conv3.weight, layer3.1.bn3.weight, layer3.1.bn3.bias, layer3.1.bn3.running_mean, layer3.1.bn3.running_var, layer3.2.conv1.weight, layer3.2.bn1.weight, layer3.2.bn1.bias, layer3.2.bn1.running_mean, layer3.2.bn1.running_var, layer3.2.conv2.weight, layer3.2.bn2.weight, layer3.2.bn2.bias, layer3.2.bn2.running_mean, layer3.2.bn2.running_var, layer3.2.conv3.weight, layer3.2.bn3.weight, layer3.2.bn3.bias, layer3.2.bn3.running_mean, layer3.2.bn3.running_var, layer3.3.conv1.weight, layer3.3.bn1.weight, layer3.3.bn1.bias, layer3.3.bn1.running_mean, layer3.3.bn1.running_var, layer3.3.conv2.weight, layer3.3.bn2.weight, layer3.3.bn2.bias, layer3.3.bn2.running_mean, layer3.3.bn2.running_var, layer3.3.conv3.weight, layer3.3.bn3.weight, layer3.3.bn3.bias, layer3.3.bn3.running_mean, layer3.3.bn3.running_var, layer3.4.conv1.weight, layer3.4.bn1.weight, layer3.4.bn1.bias, layer3.4.bn1.running_mean, layer3.4.bn1.running_var, layer3.4.conv2.weight, layer3.4.bn2.weight, layer3.4.bn2.bias, layer3.4.bn2.running_mean, layer3.4.bn2.running_var, layer3.4.conv3.weight, layer3.4.bn3.weight, layer3.4.bn3.bias, layer3.4.bn3.running_mean, layer3.4.bn3.running_var, layer3.5.conv1.weight, layer3.5.bn1.weight, layer3.5.bn1.bias, layer3.5.bn1.running_mean, layer3.5.bn1.running_var, layer3.5.conv2.weight, layer3.5.bn2.weight, layer3.5.bn2.bias, layer3.5.bn2.running_mean, layer3.5.bn2.running_var, layer3.5.conv3.weight, layer3.5.bn3.weight, layer3.5.bn3.bias, layer3.5.bn3.running_mean, layer3.5.bn3.running_var, layer4.0.conv1.weight, layer4.0.bn1.weight, layer4.0.bn1.bias, layer4.0.bn1.running_mean, layer4.0.bn1.running_var, layer4.0.conv2.weight, layer4.0.bn2.weight, layer4.0.bn2.bias, layer4.0.bn2.running_mean, layer4.0.bn2.running_var, layer4.0.conv3.weight, layer4.0.bn3.weight, layer4.0.bn3.bias, layer4.0.bn3.running_mean, layer4.0.bn3.running_var, layer4.0.downsample.0.weight, layer4.0.downsample.1.weight, layer4.0.downsample.1.bias, layer4.0.downsample.1.running_mean, layer4.0.downsample.1.running_var, layer4.1.conv1.weight, layer4.1.bn1.weight, layer4.1.bn1.bias, layer4.1.bn1.running_mean, layer4.1.bn1.running_var, layer4.1.conv2.weight, layer4.1.bn2.weight, layer4.1.bn2.bias, layer4.1.bn2.running_mean, layer4.1.bn2.running_var, layer4.1.conv3.weight, layer4.1.bn3.weight, layer4.1.bn3.bias, layer4.1.bn3.running_mean, layer4.1.bn3.running_var, layer4.2.conv1.weight, layer4.2.bn1.weight, layer4.2.bn1.bias, layer4.2.bn1.running_mean, layer4.2.bn1.running_var, layer4.2.conv2.weight, layer4.2.bn2.weight, layer4.2.bn2.bias, layer4.2.bn2.running_mean, layer4.2.bn2.running_var, layer4.2.conv3.weight, layer4.2.bn3.weight, layer4.2.bn3.bias, layer4.2.bn3.running_mean, layer4.2.bn3.running_var
+
+2021-08-10 08:32:07,315 - mmdet - INFO - initialize FPN with init_cfg {'type': 'Xavier', 'layer': 'Conv2d', 'distribution': 'uniform'}
+2021-08-10 08:32:07,434 - mmdet - INFO - initialize GFLHead with init_cfg {'type': 'Normal', 'layer': 'Conv2d', 'std': 0.01, 'override': {'type': 'Normal', 'name': 'gfl_cls', 'std': 0.01, 'bias_prob': 0.01}}
+2021-08-10 08:32:10,637 - mmdet - INFO - load checkpoint from ../PaddleDetection/gfl_debug_tools/gfl_r50_fpn_1x_coco_20200629_121244-25944287.pth
+2021-08-10 08:32:10,637 - mmdet - INFO - Use load_from_local loader
+2021-08-10 08:32:10,816 - mmdet - INFO - Start running, host: root@9cc32cd02a9d, work_dir: /paddle/mmdetection/work_dirs/gfl_r50_fpn_1x_coco
+2021-08-10 08:32:10,817 - mmdet - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) StepLrUpdaterHook                  
+(NORMAL      ) CheckpointHook                     
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) StepLrUpdaterHook                  
+(NORMAL      ) NumClassCheckHook                  
+(LOW         ) IterTimerHook                      
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) StepLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(ABOVE_NORMAL) OptimizerHook                      
+(NORMAL      ) CheckpointHook                     
+(LOW         ) IterTimerHook                      
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) CheckpointHook                     
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) NumClassCheckHook                  
+(LOW         ) IterTimerHook                      
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_epoch:
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+2021-08-10 08:32:10,817 - mmdet - INFO - workflow: [('train', 1)], max: 5 epochs
+loading annotations into memory...
+Done (t=0.00s)
+creating index...
+index created!
+=======backbone param start=======
+Param  0.conv1.weight torch.Size([64, 64, 1, 1]) tensor(0.04031625, device='cuda:0')
+Param  0.bn1.weight torch.Size([64]) tensor(0.18792982, device='cuda:0')
+Param  0.bn1.bias torch.Size([64]) tensor(0.10700530, device='cuda:0')
+Param  0.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01717052, device='cuda:0')
+Param  0.bn2.weight torch.Size([64]) tensor(0.15951559, device='cuda:0')
+Param  0.bn2.bias torch.Size([64]) tensor(0.15806258, device='cuda:0')
+Param  0.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02104857, device='cuda:0')
+Param  0.bn3.weight torch.Size([256]) tensor(0.13135095, device='cuda:0')
+Param  0.bn3.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  0.downsample.0.weight torch.Size([256, 64, 1, 1]) tensor(0.03227273, device='cuda:0')
+Param  0.downsample.1.weight torch.Size([256]) tensor(0.21055111, device='cuda:0')
+Param  0.downsample.1.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  1.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02029207, device='cuda:0')
+Param  1.bn1.weight torch.Size([64]) tensor(0.18252781, device='cuda:0')
+Param  1.bn1.bias torch.Size([64]) tensor(0.10809888, device='cuda:0')
+Param  1.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01964265, device='cuda:0')
+Param  1.bn2.weight torch.Size([64]) tensor(0.18437776, device='cuda:0')
+Param  1.bn2.bias torch.Size([64]) tensor(0.10205423, device='cuda:0')
+Param  1.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02028941, device='cuda:0')
+Param  1.bn3.weight torch.Size([256]) tensor(0.07960871, device='cuda:0')
+Param  1.bn3.bias torch.Size([256]) tensor(0.03383512, device='cuda:0')
+Param  2.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02168545, device='cuda:0')
+Param  2.bn1.weight torch.Size([64]) tensor(0.18254881, device='cuda:0')
+Param  2.bn1.bias torch.Size([64]) tensor(0.08690476, device='cuda:0')
+Param  2.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.02377797, device='cuda:0')
+Param  2.bn2.weight torch.Size([64]) tensor(0.22176343, device='cuda:0')
+Param  2.bn2.bias torch.Size([64]) tensor(0.06811355, device='cuda:0')
+Param  2.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.01857198, device='cuda:0')
+Param  2.bn3.weight torch.Size([256]) tensor(0.07720397, device='cuda:0')
+Param  2.bn3.bias torch.Size([256]) tensor(0.03879797, device='cuda:0')
+Param  0.conv1.weight torch.Size([128, 256, 1, 1]) tensor(0.02857699, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([128]) tensor(0.28633636, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([128]) tensor(0.05190109, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01546294, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([128]) tensor(0.27505893, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([128]) tensor(0.04856573, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01620801, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([512]) tensor(0.11573899, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([512]) tensor(0.02419418, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([512, 256, 1, 1]) tensor(0.01294907, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([512]) tensor(0.17905903, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([512]) tensor(0.02419418, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.00993924, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([128]) tensor(0.17257985, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([128]) tensor(0.04933318, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01109769, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([128]) tensor(0.18482631, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([128]) tensor(0.05736620, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01030320, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([512]) tensor(0.06792599, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([512]) tensor(0.02501771, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01501849, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([128]) tensor(0.20649585, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([128]) tensor(0.03762730, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01400335, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([128]) tensor(0.21437147, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([128]) tensor(0.04494231, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01637879, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([512]) tensor(0.09844682, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([512]) tensor(0.04130816, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01742451, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([128]) tensor(0.21489158, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([128]) tensor(0.04029830, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01657932, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([128]) tensor(0.23564973, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([128]) tensor(0.04941630, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01541584, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([512]) tensor(0.08973654, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([512]) tensor(0.04877503, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([256, 512, 1, 1]) tensor(0.02000118, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([256]) tensor(0.27784631, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([256]) tensor(0.07896399, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01125175, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([256]) tensor(0.25729042, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([256]) tensor(0.04742888, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01457605, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([1024]) tensor(0.13833261, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([1024]) tensor(0.01917919, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([1024, 512, 1, 1]) tensor(0.00923905, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([1024]) tensor(0.12366578, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([1024]) tensor(0.01917919, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.00950740, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([256]) tensor(0.19342548, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([256]) tensor(0.03285994, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00973134, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([256]) tensor(0.20867756, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([256]) tensor(0.04313931, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01228224, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([1024]) tensor(0.10114248, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([1024]) tensor(0.04180692, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01052899, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([256]) tensor(0.19640207, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([256]) tensor(0.03547828, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01052146, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([256]) tensor(0.20901552, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([256]) tensor(0.04988346, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01223433, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([1024]) tensor(0.09505248, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([1024]) tensor(0.04010094, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01188189, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([256]) tensor(0.20069730, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([256]) tensor(0.05184109, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01055609, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([256]) tensor(0.20403819, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([256]) tensor(0.04631741, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01158344, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([1024]) tensor(0.09007892, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([1024]) tensor(0.03989345, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01244230, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.weight torch.Size([256]) tensor(0.20179000, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.bias torch.Size([256]) tensor(0.05539857, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01047684, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.weight torch.Size([256]) tensor(0.20708929, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.bias torch.Size([256]) tensor(0.05355429, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01134757, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.weight torch.Size([1024]) tensor(0.08857735, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.bias torch.Size([1024]) tensor(0.05015737, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01265514, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.weight torch.Size([256]) tensor(0.21598066, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.bias torch.Size([256]) tensor(0.07059549, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00990670, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.weight torch.Size([256]) tensor(0.22123411, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.bias torch.Size([256]) tensor(0.05565517, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01198836, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.weight torch.Size([1024]) tensor(0.09883878, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.bias torch.Size([1024]) tensor(0.07020920, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([512, 1024, 1, 1]) tensor(0.01406983, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([512]) tensor(0.23997176, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([512]) tensor(0.10445347, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729493, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([512]) tensor(0.22545192, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([512]) tensor(0.04087635, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00941527, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([2048]) tensor(0.21845588, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([2048]) tensor(0.03036058, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([2048, 1024, 1, 1]) tensor(0.00636624, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([2048]) tensor(0.14466992, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([2048]) tensor(0.03036058, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00871650, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([512]) tensor(0.24289149, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([512]) tensor(0.07774758, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729157, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([512]) tensor(0.23818727, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([512]) tensor(0.06634600, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00926262, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([2048]) tensor(0.21812588, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([2048]) tensor(0.03991690, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00922138, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([512]) tensor(0.21433333, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([512]) tensor(0.09712077, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00584582, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([512]) tensor(0.19331482, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([512]) tensor(0.05413534, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00773854, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([2048]) tensor(0.39524746, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([2048]) tensor(0.01173479, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone param end=======
+=======backbone start=======
+backbone out:  torch.Size([1, 256, 200, 304]) tensor(0.16510303, device='cuda:0')
+backbone out:  torch.Size([1, 512, 100, 152]) tensor(0.13000056, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 1024, 50, 76]) tensor(0.06177905, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 2048, 25, 38]) tensor(0.03233691, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone end=======
+========fpn laterals start=====
+laterals:  torch.Size([1, 256, 100, 152]) tensor(0.16211355, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 50, 76]) tensor(0.13541526, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 25, 38]) tensor(0.14547825, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn laterals end=====
+========fpn output start=====
+fpn output:  torch.Size([1, 256, 100, 152]) tensor(0.28635523, device='cuda:0', grad_fn=<MeanBackward0>)/paddle/mmdetection/mmdet/core/anchor/anchor_generator.py:323: UserWarning: ``grid_anchors`` would be deprecated soon. Please use ``grid_priors`` 
+  warnings.warn('``grid_anchors`` would be deprecated soon. '
+/paddle/mmdetection/mmdet/core/anchor/anchor_generator.py:360: UserWarning: ``single_level_grid_anchors`` would be deprecated soon. Please use ``single_level_grid_priors`` 
+  '``single_level_grid_anchors`` would be deprecated soon. '
+/paddle/mmdetection/mmdet/models/dense_heads/gfl_head.py:257: UserWarning: This overload of nonzero is deprecated:
+	nonzero()
+Consider using one of the following signatures instead:
+	nonzero(*, bool as_tuple) (Triggered internally at  /pytorch/torch/csrc/utils/python_arg_parser.cpp:882.)
+  & (labels < bg_class_ind)).nonzero().squeeze(1)
+2021-08-10 08:32:13,466 - mmdet - INFO - Exp name: gfl_r50_fpn_1x_coco.py
+2021-08-10 08:32:13,467 - mmdet - INFO - Epoch [1][1/1]	lr: 1.000e-02, eta: 0:00:10, time: 2.643, data_time: 2.143, memory: 1431, loss_cls: 0.3908, loss_bbox: 0.4563, loss_dfl: 0.2508, loss: 1.0979
+2021-08-10 08:32:13,508 - mmdet - INFO - Saving checkpoint at 1 epochs
+
+fpn output:  torch.Size([1, 256, 50, 76]) tensor(0.20911758, device='cuda:0', grad_fn=<MeanBackward0>)
+fpn output:  torch.Size([1, 256, 25, 38]) tensor(0.16129225, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn output end=====
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 100, 152]) tensor(0.15992129, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 100, 152]) tensor(0.20891401, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 50, 76]) tensor(0.16401716, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 50, 76]) tensor(0.20757332, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 25, 38]) tensor(0.16479337, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 25, 38]) tensor(0.20632464, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 13, 19]) tensor(0.17189869, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 13, 19]) tensor(0.21090816, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 7, 10]) tensor(0.17220522, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 7, 10]) tensor(0.21392708, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+=========get target=======
+pos_gt_bboxes:  torch.Size([192, 4]) tensor(609.61004639, device='cuda:0')
+=========get target=======
+======get loss start=======
+pos_decode_bbox_pred:  torch.Size([105, 4]) tensor(74.78590393, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([105, 4]) tensor(74.70980835, device='cuda:0')
+pred_corners:  torch.Size([420, 17]) tensor(2.61279774, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([420]) tensor(3.20019197, device='cuda:0')
+weight_targets:  torch.Size([105]) tensor(0.24617136, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([105]) tensor(0.61689216, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([105]) tensor(0.38651639, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(17.83403015, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([66, 4]) tensor(41.98219681, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([66, 4]) tensor(41.97811127, device='cuda:0')
+pred_corners:  torch.Size([264, 17]) tensor(3.01511812, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([264]) tensor(4.27414894, device='cuda:0')
+weight_targets:  torch.Size([66]) tensor(0.44868171, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([66]) tensor(0.80865735, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([66]) tensor(0.19134262, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(9.71701813, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([21, 4]) tensor(14.70474148, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([21, 4]) tensor(14.82145500, device='cuda:0')
+pred_corners:  torch.Size([84, 17]) tensor(3.12708449, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([84]) tensor(3.28468513, device='cuda:0')
+weight_targets:  torch.Size([21]) tensor(0.40277323, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([21]) tensor(0.83159965, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([21]) tensor(0.16840032, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(1.61428094, device='cuda:0', grad_fn=<MeanBackward0>)
+======get loss end=======
+backward bbox_reg torch.Size([1, 68, 7, 10]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 7, 10]) tensor(1.94293071e-09, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 13, 19]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 13, 19]) tensor(1.48701291e-08, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 25, 38]) tensor(1.15539638e-06, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 25, 38]) tensor(6.30618501e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 50, 76]) tensor(1.00905652e-06, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 50, 76]) tensor(4.98920031e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 100, 152]) tensor(2.99877797e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 100, 152]) tensor(2.25263420e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 7, 10]) tensor(3.24476837e-08, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 13, 19]) tensor(3.25637018e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 25, 38]) tensor(1.38810283e-05, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 50, 76]) tensor(8.85714235e-06, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 100, 152]) tensor(2.64259347e-06, device='cuda:0')
+backward backbone torch.Size([1, 2048, 25, 38]) tensor(3.58828147e-05, device='cuda:0')
+backward backbone torch.Size([1, 1024, 50, 76]) tensor(2.32629081e-05, device='cuda:0')
+backward backbone torch.Size([1, 512, 100, 152]) tensor(1.26561827e-05, device='cuda:0')
+=======backbone param start=======
+Param  0.conv1.weight torch.Size([64, 64, 1, 1]) tensor(0.04031625, device='cuda:0')
+Param  0.bn1.weight torch.Size([64]) tensor(0.18792982, device='cuda:0')
+Param  0.bn1.bias torch.Size([64]) tensor(0.10700530, device='cuda:0')
+Param  0.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01717052, device='cuda:0')
+Param  0.bn2.weight torch.Size([64]) tensor(0.15951559, device='cuda:0')
+Param  0.bn2.bias torch.Size([64]) tensor(0.15806258, device='cuda:0')
+Param  0.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02104857, device='cuda:0')
+Param  0.bn3.weight torch.Size([256]) tensor(0.13135095, device='cuda:0')
+Param  0.bn3.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  0.downsample.0.weight torch.Size([256, 64, 1, 1]) tensor(0.03227273, device='cuda:0')
+Param  0.downsample.1.weight torch.Size([256]) tensor(0.21055111, device='cuda:0')
+Param  0.downsample.1.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  1.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02029207, device='cuda:0')
+Param  1.bn1.weight torch.Size([64]) tensor(0.18252781, device='cuda:0')
+Param  1.bn1.bias torch.Size([64]) tensor(0.10809888, device='cuda:0')
+Param  1.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01964265, device='cuda:0')
+Param  1.bn2.weight torch.Size([64]) tensor(0.18437776, device='cuda:0')
+Param  1.bn2.bias torch.Size([64]) tensor(0.10205423, device='cuda:0')
+Param  1.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02028941, device='cuda:0')
+Param  1.bn3.weight torch.Size([256]) tensor(0.07960871, device='cuda:0')
+Param  1.bn3.bias torch.Size([256]) tensor(0.03383512, device='cuda:0')
+Param  2.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02168545, device='cuda:0')
+Param  2.bn1.weight torch.Size([64]) tensor(0.18254881, device='cuda:0')
+Param  2.bn1.bias torch.Size([64]) tensor(0.08690476, device='cuda:0')
+Param  2.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.02377797, device='cuda:0')
+Param  2.bn2.weight torch.Size([64]) tensor(0.22176343, device='cuda:0')
+Param  2.bn2.bias torch.Size([64]) tensor(0.06811355, device='cuda:0')
+Param  2.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.01857198, device='cuda:0')
+Param  2.bn3.weight torch.Size([256]) tensor(0.07720397, device='cuda:0')
+Param  2.bn3.bias torch.Size([256]) tensor(0.03879797, device='cuda:0')
+Param  0.conv1.weight torch.Size([128, 256, 1, 1]) tensor(0.02857590, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([128]) tensor(0.28638780, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([128]) tensor(0.05183410, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01546322, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([128]) tensor(0.27514488, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([128]) tensor(0.04855041, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01620889, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([512]) tensor(0.11576432, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([512]) tensor(0.02419446, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([512, 256, 1, 1]) tensor(0.01294893, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([512]) tensor(0.17906001, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([512]) tensor(0.02419446, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.00993948, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([128]) tensor(0.17256011, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([128]) tensor(0.04932979, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01109777, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([128]) tensor(0.18480906, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([128]) tensor(0.05735914, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01030309, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([512]) tensor(0.06792231, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([512]) tensor(0.02501268, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01501886, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([128]) tensor(0.20654438, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([128]) tensor(0.03762492, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01400360, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([128]) tensor(0.21442036, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([128]) tensor(0.04493145, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01637940, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([512]) tensor(0.09846232, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([512]) tensor(0.04130168, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01742433, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([128]) tensor(0.21487725, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([128]) tensor(0.04029433, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01657922, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([128]) tensor(0.23563424, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([128]) tensor(0.04941626, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01541566, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([512]) tensor(0.08973065, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([512]) tensor(0.04877054, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([256, 512, 1, 1]) tensor(0.02000108, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([256]) tensor(0.27783459, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([256]) tensor(0.07895797, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01125172, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([256]) tensor(0.25727224, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([256]) tensor(0.04741577, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01457591, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([1024]) tensor(0.13832885, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([1024]) tensor(0.01917915, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([1024, 512, 1, 1]) tensor(0.00923913, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([1024]) tensor(0.12366500, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([1024]) tensor(0.01917915, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.00950730, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([256]) tensor(0.19341496, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([256]) tensor(0.03285634, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00973130, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([256]) tensor(0.20867352, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([256]) tensor(0.04313710, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01228224, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([1024]) tensor(0.10113941, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([1024]) tensor(0.04180627, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01052894, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([256]) tensor(0.19639432, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([256]) tensor(0.03548484, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01052139, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([256]) tensor(0.20900597, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([256]) tensor(0.04989041, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01223427, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([1024]) tensor(0.09505177, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([1024]) tensor(0.04010227, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01188187, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([256]) tensor(0.20068748, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([256]) tensor(0.05183981, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01055607, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([256]) tensor(0.20402974, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([256]) tensor(0.04632431, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01158340, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([1024]) tensor(0.09007414, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([1024]) tensor(0.03989603, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01244230, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.weight torch.Size([256]) tensor(0.20178634, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.bias torch.Size([256]) tensor(0.05539692, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01047678, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.weight torch.Size([256]) tensor(0.20708221, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.bias torch.Size([256]) tensor(0.05355616, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01134761, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.weight torch.Size([1024]) tensor(0.08857183, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.bias torch.Size([1024]) tensor(0.05015838, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01265511, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.weight torch.Size([256]) tensor(0.21598044, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.bias torch.Size([256]) tensor(0.07059574, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00990675, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.weight torch.Size([256]) tensor(0.22123361, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.bias torch.Size([256]) tensor(0.05566029, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01198849, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.weight torch.Size([1024]) tensor(0.09883393, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.bias torch.Size([1024]) tensor(0.07021211, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([512, 1024, 1, 1]) tensor(0.01406980, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([512]) tensor(0.23997457, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([512]) tensor(0.10445112, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729493, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([512]) tensor(0.22545239, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([512]) tensor(0.04087922, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00941527, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([2048]) tensor(0.21845639, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([2048]) tensor(0.03036023, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([2048, 1024, 1, 1]) tensor(0.00636622, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([2048]) tensor(0.14466935, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([2048]) tensor(0.03036023, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00871648, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([512]) tensor(0.24288842, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([512]) tensor(0.07774167, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729157, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([512]) tensor(0.23817572, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([512]) tensor(0.06635463, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00926256, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([2048]) tensor(0.21812415, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([2048]) tensor(0.03991695, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00922136, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([512]) tensor(0.21432762, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([512]) tensor(0.09712838, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00584581, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([512]) tensor(0.19331113, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([512]) tensor(0.05413445, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00773854, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([2048]) tensor(0.39524674, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([2048]) tensor(0.01173592, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone param end=======
+=======backbone start=======
+backbone out:  torch.Size([1, 256, 200, 304]) tensor(0.16510303, device='cuda:0')
+backbone out:  torch.Size([1, 512, 100, 152]) tensor(0.13009106, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 1024, 50, 76]) tensor(0.06183532, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 2048, 25, 38]) tensor(0.03386361, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone end=======
+========fpn laterals start=====
+laterals:  torch.Size([1, 256, 100, 152]) tensor(0.16213532, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 50, 76]) tensor(0.13581674, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 25, 38]) tensor(0.15048966, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn laterals end=====
+========fpn output start=====
+fpn output:  torch.Size([1, 256, 100, 152]) tensor(0.29104754, device='cuda:0', grad_fn=<MeanBackward0>)2021-08-10 08:32:17,308 - mmdet - INFO - Exp name: gfl_r50_fpn_1x_coco.py
+2021-08-10 08:32:17,308 - mmdet - INFO - Epoch [2][1/1]	lr: 1.018e-02, eta: 0:00:07, time: 2.635, data_time: 2.141, memory: 1682, loss_cls: 0.2512, loss_bbox: 0.2876, loss_dfl: 0.2039, loss: 0.7427
+2021-08-10 08:32:17,350 - mmdet - INFO - Saving checkpoint at 2 epochs
+
+fpn output:  torch.Size([1, 256, 50, 76]) tensor(0.21493693, device='cuda:0', grad_fn=<MeanBackward0>)
+fpn output:  torch.Size([1, 256, 25, 38]) tensor(0.16709308, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn output end=====
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 100, 152]) tensor(0.15912485, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 100, 152]) tensor(0.20837139, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 50, 76]) tensor(0.16375159, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 50, 76]) tensor(0.20673275, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 25, 38]) tensor(0.16424565, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 25, 38]) tensor(0.20582277, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 13, 19]) tensor(0.17165746, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 13, 19]) tensor(0.21045129, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 7, 10]) tensor(0.17172213, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 7, 10]) tensor(0.21418414, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+=========get target=======
+pos_gt_bboxes:  torch.Size([192, 4]) tensor(609.61004639, device='cuda:0')
+=========get target=======
+======get loss start=======
+pos_decode_bbox_pred:  torch.Size([105, 4]) tensor(74.76988983, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([105, 4]) tensor(74.70980835, device='cuda:0')
+pred_corners:  torch.Size([420, 17]) tensor(2.98216057, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([420]) tensor(3.20019197, device='cuda:0')
+weight_targets:  torch.Size([105]) tensor(0.37649465, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([105]) tensor(0.74202228, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([105]) tensor(0.25827095, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(15.73276615, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([66, 4]) tensor(41.96180344, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([66, 4]) tensor(41.97811127, device='cuda:0')
+pred_corners:  torch.Size([264, 17]) tensor(3.31913328, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([264]) tensor(4.27414894, device='cuda:0')
+weight_targets:  torch.Size([66]) tensor(0.56748199, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([66]) tensor(0.88875622, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([66]) tensor(0.11124380, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(7.11904716, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([21, 4]) tensor(14.66972923, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([21, 4]) tensor(14.82145500, device='cuda:0')
+pred_corners:  torch.Size([84, 17]) tensor(3.14120626, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([84]) tensor(3.28468513, device='cuda:0')
+weight_targets:  torch.Size([21]) tensor(0.45655006, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([21]) tensor(0.83957857, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([21]) tensor(0.16042146, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(2.04309988, device='cuda:0', grad_fn=<MeanBackward0>)
+======get loss end=======
+backward bbox_reg torch.Size([1, 68, 7, 10]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 7, 10]) tensor(1.32551925e-09, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 13, 19]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 13, 19]) tensor(1.49192463e-08, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 25, 38]) tensor(1.01133367e-06, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 25, 38]) tensor(5.18176932e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 50, 76]) tensor(8.81636424e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 50, 76]) tensor(3.73658395e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 100, 152]) tensor(3.51869716e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 100, 152]) tensor(2.09324824e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 7, 10]) tensor(1.83375501e-08, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 13, 19]) tensor(3.48302137e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 25, 38]) tensor(1.12685157e-05, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 50, 76]) tensor(5.26674830e-06, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 100, 152]) tensor(1.77893412e-06, device='cuda:0')
+backward backbone torch.Size([1, 2048, 25, 38]) tensor(1.98984526e-05, device='cuda:0')
+backward backbone torch.Size([1, 1024, 50, 76]) tensor(1.21420217e-05, device='cuda:0')
+backward backbone torch.Size([1, 512, 100, 152]) tensor(6.19264802e-06, device='cuda:0')
+=======backbone param start=======
+Param  0.conv1.weight torch.Size([64, 64, 1, 1]) tensor(0.04031625, device='cuda:0')
+Param  0.bn1.weight torch.Size([64]) tensor(0.18792982, device='cuda:0')
+Param  0.bn1.bias torch.Size([64]) tensor(0.10700530, device='cuda:0')
+Param  0.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01717052, device='cuda:0')
+Param  0.bn2.weight torch.Size([64]) tensor(0.15951559, device='cuda:0')
+Param  0.bn2.bias torch.Size([64]) tensor(0.15806258, device='cuda:0')
+Param  0.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02104857, device='cuda:0')
+Param  0.bn3.weight torch.Size([256]) tensor(0.13135095, device='cuda:0')
+Param  0.bn3.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  0.downsample.0.weight torch.Size([256, 64, 1, 1]) tensor(0.03227273, device='cuda:0')
+Param  0.downsample.1.weight torch.Size([256]) tensor(0.21055111, device='cuda:0')
+Param  0.downsample.1.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  1.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02029207, device='cuda:0')
+Param  1.bn1.weight torch.Size([64]) tensor(0.18252781, device='cuda:0')
+Param  1.bn1.bias torch.Size([64]) tensor(0.10809888, device='cuda:0')
+Param  1.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01964265, device='cuda:0')
+Param  1.bn2.weight torch.Size([64]) tensor(0.18437776, device='cuda:0')
+Param  1.bn2.bias torch.Size([64]) tensor(0.10205423, device='cuda:0')
+Param  1.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02028941, device='cuda:0')
+Param  1.bn3.weight torch.Size([256]) tensor(0.07960871, device='cuda:0')
+Param  1.bn3.bias torch.Size([256]) tensor(0.03383512, device='cuda:0')
+Param  2.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02168545, device='cuda:0')
+Param  2.bn1.weight torch.Size([64]) tensor(0.18254881, device='cuda:0')
+Param  2.bn1.bias torch.Size([64]) tensor(0.08690476, device='cuda:0')
+Param  2.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.02377797, device='cuda:0')
+Param  2.bn2.weight torch.Size([64]) tensor(0.22176343, device='cuda:0')
+Param  2.bn2.bias torch.Size([64]) tensor(0.06811355, device='cuda:0')
+Param  2.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.01857198, device='cuda:0')
+Param  2.bn3.weight torch.Size([256]) tensor(0.07720397, device='cuda:0')
+Param  2.bn3.bias torch.Size([256]) tensor(0.03879797, device='cuda:0')
+Param  0.conv1.weight torch.Size([128, 256, 1, 1]) tensor(0.02857472, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([128]) tensor(0.28642651, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([128]) tensor(0.05176918, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01546345, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([128]) tensor(0.27521902, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([128]) tensor(0.04853680, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01620974, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([512]) tensor(0.11578757, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([512]) tensor(0.02419509, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([512, 256, 1, 1]) tensor(0.01294892, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([512]) tensor(0.17906116, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([512]) tensor(0.02419509, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.00993976, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([128]) tensor(0.17253990, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([128]) tensor(0.04932215, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01109785, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([128]) tensor(0.18478614, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([128]) tensor(0.05735147, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01030291, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([512]) tensor(0.06791635, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([512]) tensor(0.02500933, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01501915, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([128]) tensor(0.20657471, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([128]) tensor(0.03762507, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01400380, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([128]) tensor(0.21444906, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([128]) tensor(0.04492044, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01637989, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([512]) tensor(0.09847088, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([512]) tensor(0.04129606, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01742418, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([128]) tensor(0.21486300, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([128]) tensor(0.04028964, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01657919, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([128]) tensor(0.23561758, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([128]) tensor(0.04941538, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01541546, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([512]) tensor(0.08972222, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([512]) tensor(0.04876723, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([256, 512, 1, 1]) tensor(0.02000107, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([256]) tensor(0.27782029, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([256]) tensor(0.07895735, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01125171, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([256]) tensor(0.25725174, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([256]) tensor(0.04740756, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01457583, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([1024]) tensor(0.13832448, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([1024]) tensor(0.01917904, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([1024, 512, 1, 1]) tensor(0.00923923, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([1024]) tensor(0.12366506, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([1024]) tensor(0.01917904, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.00950722, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([256]) tensor(0.19340788, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([256]) tensor(0.03285148, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00973129, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([256]) tensor(0.20867236, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([256]) tensor(0.04313380, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01228228, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([1024]) tensor(0.10113572, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([1024]) tensor(0.04180609, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01052896, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([256]) tensor(0.19639809, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([256]) tensor(0.03549188, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01052140, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([256]) tensor(0.20900561, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([256]) tensor(0.04989739, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01223427, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([1024]) tensor(0.09505346, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([1024]) tensor(0.04010390, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01188188, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([256]) tensor(0.20068172, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([256]) tensor(0.05183869, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01055611, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([256]) tensor(0.20402701, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([256]) tensor(0.04633080, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01158340, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([1024]) tensor(0.09007116, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([1024]) tensor(0.03989855, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01244236, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.weight torch.Size([256]) tensor(0.20178914, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.bias torch.Size([256]) tensor(0.05539589, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01047677, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.weight torch.Size([256]) tensor(0.20708051, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.bias torch.Size([256]) tensor(0.05355790, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01134771, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.weight torch.Size([1024]) tensor(0.08856905, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.bias torch.Size([1024]) tensor(0.05015972, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01265511, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.weight torch.Size([256]) tensor(0.21598464, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.bias torch.Size([256]) tensor(0.07059520, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00990684, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.weight torch.Size([256]) tensor(0.22123651, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.bias torch.Size([256]) tensor(0.05566679, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01198864, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.weight torch.Size([1024]) tensor(0.09883086, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.bias torch.Size([1024]) tensor(0.07021448, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([512, 1024, 1, 1]) tensor(0.01406978, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([512]) tensor(0.23997532, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([512]) tensor(0.10444979, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729495, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([512]) tensor(0.22545153, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([512]) tensor(0.04088362, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00941528, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([2048]) tensor(0.21845603, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([2048]) tensor(0.03036011, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([2048, 1024, 1, 1]) tensor(0.00636621, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([2048]) tensor(0.14466834, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([2048]) tensor(0.03036011, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00871645, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([512]) tensor(0.24288492, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([512]) tensor(0.07773724, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729158, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([512]) tensor(0.23816478, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([512]) tensor(0.06636271, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00926253, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([2048]) tensor(0.21812254, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([2048]) tensor(0.03991695, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00922133, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([512]) tensor(0.21431836, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([512]) tensor(0.09714118, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00584580, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([512]) tensor(0.19330463, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([512]) tensor(0.05413539, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00773854, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([2048]) tensor(0.39524567, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([2048]) tensor(0.01173703, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone param end=======
+=======backbone start=======
+backbone out:  torch.Size([1, 256, 200, 304]) tensor(0.16510303, device='cuda:0')
+backbone out:  torch.Size([1, 512, 100, 152]) tensor(0.13011369, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 1024, 50, 76]) tensor(0.06191899, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 2048, 25, 38]) tensor(0.03569630, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone end=======
+========fpn laterals start=====
+laterals:  torch.Size([1, 256, 100, 152]) tensor(0.16219202, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 50, 76]) tensor(0.13628408, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 25, 38]) tensor(0.15682720, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn laterals end=====
+========fpn output start=====
+fpn output:  torch.Size([1, 256, 100, 152]) tensor(0.29807159, device='cuda:0', grad_fn=<MeanBackward0>)2021-08-10 08:32:21,139 - mmdet - INFO - Exp name: gfl_r50_fpn_1x_coco.py
+2021-08-10 08:32:21,140 - mmdet - INFO - Epoch [3][1/1]	lr: 1.036e-02, eta: 0:00:05, time: 2.621, data_time: 2.144, memory: 1682, loss_cls: 0.1840, loss_bbox: 0.2376, loss_dfl: 0.1871, loss: 0.6087
+2021-08-10 08:32:21,182 - mmdet - INFO - Saving checkpoint at 3 epochs
+
+fpn output:  torch.Size([1, 256, 50, 76]) tensor(0.22274759, device='cuda:0', grad_fn=<MeanBackward0>)
+fpn output:  torch.Size([1, 256, 25, 38]) tensor(0.17460294, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn output end=====
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 100, 152]) tensor(0.15952231, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 100, 152]) tensor(0.20815398, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 50, 76]) tensor(0.16427898, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 50, 76]) tensor(0.20602471, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 25, 38]) tensor(0.16409907, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 25, 38]) tensor(0.20530371, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 13, 19]) tensor(0.17173682, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 13, 19]) tensor(0.21058896, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 7, 10]) tensor(0.17150883, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 7, 10]) tensor(0.21461438, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+=========get target=======
+pos_gt_bboxes:  torch.Size([192, 4]) tensor(609.61004639, device='cuda:0')
+=========get target=======
+======get loss start=======
+pos_decode_bbox_pred:  torch.Size([105, 4]) tensor(74.74780273, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([105, 4]) tensor(74.70980835, device='cuda:0')
+pred_corners:  torch.Size([420, 17]) tensor(3.14158535, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([420]) tensor(3.20019197, device='cuda:0')
+weight_targets:  torch.Size([105]) tensor(0.43913409, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([105]) tensor(0.79185545, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([105]) tensor(0.20814450, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(15.52854061, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([66, 4]) tensor(41.94660950, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([66, 4]) tensor(41.97811127, device='cuda:0')
+pred_corners:  torch.Size([264, 17]) tensor(3.48596787, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([264]) tensor(4.27414894, device='cuda:0')
+weight_targets:  torch.Size([66]) tensor(0.60274553, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([66]) tensor(0.91869682, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([66]) tensor(0.08130327, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(5.46285439, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([21, 4]) tensor(14.71391392, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([21, 4]) tensor(14.82145500, device='cuda:0')
+pred_corners:  torch.Size([84, 17]) tensor(3.32056022, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([84]) tensor(3.28468513, device='cuda:0')
+weight_targets:  torch.Size([21]) tensor(0.53066009, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([21]) tensor(0.88138121, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([21]) tensor(0.11861883, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(2.06796741, device='cuda:0', grad_fn=<MeanBackward0>)
+======get loss end=======
+backward bbox_reg torch.Size([1, 68, 7, 10]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 7, 10]) tensor(1.09478737e-09, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 13, 19]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 13, 19]) tensor(1.10513714e-08, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 25, 38]) tensor(1.00909403e-06, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 25, 38]) tensor(4.56540988e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 50, 76]) tensor(8.03797775e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 50, 76]) tensor(2.68548177e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 100, 152]) tensor(3.80013034e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 100, 152]) tensor(1.86453647e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 7, 10]) tensor(1.28681332e-08, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 13, 19]) tensor(2.31020579e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 25, 38]) tensor(8.01877650e-06, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 50, 76]) tensor(3.98429984e-06, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 100, 152]) tensor(1.56083411e-06, device='cuda:0')
+backward backbone torch.Size([1, 2048, 25, 38]) tensor(1.36790140e-05, device='cuda:0')
+backward backbone torch.Size([1, 1024, 50, 76]) tensor(8.60452928e-06, device='cuda:0')
+backward backbone torch.Size([1, 512, 100, 152]) tensor(4.31266153e-06, device='cuda:0')
+=======backbone param start=======
+Param  0.conv1.weight torch.Size([64, 64, 1, 1]) tensor(0.04031625, device='cuda:0')
+Param  0.bn1.weight torch.Size([64]) tensor(0.18792982, device='cuda:0')
+Param  0.bn1.bias torch.Size([64]) tensor(0.10700530, device='cuda:0')
+Param  0.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01717052, device='cuda:0')
+Param  0.bn2.weight torch.Size([64]) tensor(0.15951559, device='cuda:0')
+Param  0.bn2.bias torch.Size([64]) tensor(0.15806258, device='cuda:0')
+Param  0.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02104857, device='cuda:0')
+Param  0.bn3.weight torch.Size([256]) tensor(0.13135095, device='cuda:0')
+Param  0.bn3.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  0.downsample.0.weight torch.Size([256, 64, 1, 1]) tensor(0.03227273, device='cuda:0')
+Param  0.downsample.1.weight torch.Size([256]) tensor(0.21055111, device='cuda:0')
+Param  0.downsample.1.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  1.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02029207, device='cuda:0')
+Param  1.bn1.weight torch.Size([64]) tensor(0.18252781, device='cuda:0')
+Param  1.bn1.bias torch.Size([64]) tensor(0.10809888, device='cuda:0')
+Param  1.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01964265, device='cuda:0')
+Param  1.bn2.weight torch.Size([64]) tensor(0.18437776, device='cuda:0')
+Param  1.bn2.bias torch.Size([64]) tensor(0.10205423, device='cuda:0')
+Param  1.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02028941, device='cuda:0')
+Param  1.bn3.weight torch.Size([256]) tensor(0.07960871, device='cuda:0')
+Param  1.bn3.bias torch.Size([256]) tensor(0.03383512, device='cuda:0')
+Param  2.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02168545, device='cuda:0')
+Param  2.bn1.weight torch.Size([64]) tensor(0.18254881, device='cuda:0')
+Param  2.bn1.bias torch.Size([64]) tensor(0.08690476, device='cuda:0')
+Param  2.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.02377797, device='cuda:0')
+Param  2.bn2.weight torch.Size([64]) tensor(0.22176343, device='cuda:0')
+Param  2.bn2.bias torch.Size([64]) tensor(0.06811355, device='cuda:0')
+Param  2.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.01857198, device='cuda:0')
+Param  2.bn3.weight torch.Size([256]) tensor(0.07720397, device='cuda:0')
+Param  2.bn3.bias torch.Size([256]) tensor(0.03879797, device='cuda:0')
+Param  0.conv1.weight torch.Size([128, 256, 1, 1]) tensor(0.02857383, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([128]) tensor(0.28645438, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([128]) tensor(0.05172326, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01546364, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([128]) tensor(0.27527538, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([128]) tensor(0.04853433, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01621049, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([512]) tensor(0.11580755, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([512]) tensor(0.02419609, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([512, 256, 1, 1]) tensor(0.01294905, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([512]) tensor(0.17906252, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([512]) tensor(0.02419609, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.00994007, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([128]) tensor(0.17251951, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([128]) tensor(0.04931555, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01109792, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([128]) tensor(0.18476161, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([128]) tensor(0.05734515, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01030272, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([512]) tensor(0.06790882, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([512]) tensor(0.02500930, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01501945, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([128]) tensor(0.20659098, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([128]) tensor(0.03762831, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01400397, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([128]) tensor(0.21446076, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([128]) tensor(0.04491094, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01638026, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([512]) tensor(0.09847538, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([512]) tensor(0.04129239, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01742416, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([128]) tensor(0.21486387, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([128]) tensor(0.04028264, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01657931, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([128]) tensor(0.23561230, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([128]) tensor(0.04940889, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01541542, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([512]) tensor(0.08971693, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([512]) tensor(0.04876536, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([256, 512, 1, 1]) tensor(0.02000123, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([256]) tensor(0.27780905, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([256]) tensor(0.07895818, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01125172, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([256]) tensor(0.25723484, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([256]) tensor(0.04740657, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01457583, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([1024]) tensor(0.13832113, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([1024]) tensor(0.01917876, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([1024, 512, 1, 1]) tensor(0.00923933, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([1024]) tensor(0.12366419, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([1024]) tensor(0.01917877, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.00950722, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([256]) tensor(0.19340885, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([256]) tensor(0.03284339, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00973133, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([256]) tensor(0.20867530, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([256]) tensor(0.04312950, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01228236, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([1024]) tensor(0.10113315, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([1024]) tensor(0.04180718, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01052902, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([256]) tensor(0.19640496, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([256]) tensor(0.03549895, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01052145, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([256]) tensor(0.20900720, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([256]) tensor(0.04990479, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01223429, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([1024]) tensor(0.09505605, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([1024]) tensor(0.04010608, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01188195, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([256]) tensor(0.20067872, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([256]) tensor(0.05183904, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01055618, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([256]) tensor(0.20402849, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([256]) tensor(0.04633399, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01158344, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([1024]) tensor(0.09007058, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([1024]) tensor(0.03990116, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01244246, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.weight torch.Size([256]) tensor(0.20179486, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.bias torch.Size([256]) tensor(0.05539477, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01047680, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.weight torch.Size([256]) tensor(0.20708317, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.bias torch.Size([256]) tensor(0.05356034, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01134786, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.weight torch.Size([1024]) tensor(0.08856963, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.bias torch.Size([1024]) tensor(0.05016096, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01265515, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.weight torch.Size([256]) tensor(0.21599048, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.bias torch.Size([256]) tensor(0.07059400, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00990696, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.weight torch.Size([256]) tensor(0.22124195, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.bias torch.Size([256]) tensor(0.05567349, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01198883, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.weight torch.Size([1024]) tensor(0.09883168, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.bias torch.Size([1024]) tensor(0.07021616, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([512, 1024, 1, 1]) tensor(0.01406974, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([512]) tensor(0.23997313, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([512]) tensor(0.10444969, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729498, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([512]) tensor(0.22544795, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([512]) tensor(0.04088897, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00941529, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([2048]) tensor(0.21845454, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([2048]) tensor(0.03036041, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([2048, 1024, 1, 1]) tensor(0.00636622, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([2048]) tensor(0.14466712, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([2048]) tensor(0.03036041, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00871642, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([512]) tensor(0.24288288, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([512]) tensor(0.07773416, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729159, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([512]) tensor(0.23815680, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([512]) tensor(0.06636839, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00926254, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([2048]) tensor(0.21812120, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([2048]) tensor(0.03991698, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00922130, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([512]) tensor(0.21430671, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([512]) tensor(0.09715817, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00584579, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([512]) tensor(0.19329953, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([512]) tensor(0.05413500, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00773856, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([2048]) tensor(0.39524436, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([2048]) tensor(0.01173775, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone param end=======
+=======backbone start=======
+backbone out:  torch.Size([1, 256, 200, 304]) tensor(0.16510303, device='cuda:0')
+backbone out:  torch.Size([1, 512, 100, 152]) tensor(0.13010430, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 1024, 50, 76]) tensor(0.06197860, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 2048, 25, 38]) tensor(0.03721597, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone end=======
+========fpn laterals start=====
+laterals:  torch.Size([1, 256, 100, 152]) tensor(0.16232221, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 50, 76]) tensor(0.13675983, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 25, 38]) tensor(0.16266572, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn laterals end=====
+========fpn output start=====
+fpn output:  torch.Size([1, 256, 100, 152]) tensor(0.30540404, device='cuda:0', grad_fn=<MeanBackward0>)2021-08-10 08:32:24,975 - mmdet - INFO - Exp name: gfl_r50_fpn_1x_coco.py
+2021-08-10 08:32:24,976 - mmdet - INFO - Epoch [4][1/1]	lr: 1.054e-02, eta: 0:00:02, time: 2.619, data_time: 2.144, memory: 1682, loss_cls: 0.1635, loss_bbox: 0.2014, loss_dfl: 0.1760, loss: 0.5408
+2021-08-10 08:32:25,021 - mmdet - INFO - Saving checkpoint at 4 epochs
+
+fpn output:  torch.Size([1, 256, 50, 76]) tensor(0.23046911, device='cuda:0', grad_fn=<MeanBackward0>)
+fpn output:  torch.Size([1, 256, 25, 38]) tensor(0.18186991, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn output end=====
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 100, 152]) tensor(0.16061892, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 100, 152]) tensor(0.20813511, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 50, 76]) tensor(0.16513887, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 50, 76]) tensor(0.20539750, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 25, 38]) tensor(0.16428556, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 25, 38]) tensor(0.20508660, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 13, 19]) tensor(0.17227495, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 13, 19]) tensor(0.21100821, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 7, 10]) tensor(0.17167015, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 7, 10]) tensor(0.21503626, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+=========get target=======
+pos_gt_bboxes:  torch.Size([192, 4]) tensor(609.61004639, device='cuda:0')
+=========get target=======
+======get loss start=======
+pos_decode_bbox_pred:  torch.Size([105, 4]) tensor(74.71144104, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([105, 4]) tensor(74.70980835, device='cuda:0')
+pred_corners:  torch.Size([420, 17]) tensor(3.23856449, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([420]) tensor(3.20019197, device='cuda:0')
+weight_targets:  torch.Size([105]) tensor(0.47748291, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([105]) tensor(0.83974254, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([105]) tensor(0.16025749, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(13.77593517, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([66, 4]) tensor(41.95782089, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([66, 4]) tensor(41.97811127, device='cuda:0')
+pred_corners:  torch.Size([264, 17]) tensor(3.61573219, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([264]) tensor(4.27414894, device='cuda:0')
+weight_targets:  torch.Size([66]) tensor(0.62201148, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([66]) tensor(0.93543684, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([66]) tensor(0.06456316, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(4.66206264, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([21, 4]) tensor(14.79454136, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([21, 4]) tensor(14.82145500, device='cuda:0')
+pred_corners:  torch.Size([84, 17]) tensor(3.50960565, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([84]) tensor(3.28468513, device='cuda:0')
+weight_targets:  torch.Size([21]) tensor(0.59677947, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([21]) tensor(0.88551849, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([21]) tensor(0.11448153, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(2.44987965, device='cuda:0', grad_fn=<MeanBackward0>)
+======get loss end=======
+backward bbox_reg torch.Size([1, 68, 7, 10]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 7, 10]) tensor(1.02495812e-09, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 13, 19]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 13, 19]) tensor(8.05783795e-09, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 25, 38]) tensor(9.73050874e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 25, 38]) tensor(4.18264619e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 50, 76]) tensor(7.24096083e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 50, 76]) tensor(2.37294955e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 100, 152]) tensor(3.75408433e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 100, 152]) tensor(1.71326434e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 7, 10]) tensor(1.10965832e-08, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 13, 19]) tensor(1.48776365e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 25, 38]) tensor(9.02787724e-06, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 50, 76]) tensor(3.24698749e-06, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 100, 152]) tensor(1.35305845e-06, device='cuda:0')
+backward backbone torch.Size([1, 2048, 25, 38]) tensor(1.18332873e-05, device='cuda:0')
+backward backbone torch.Size([1, 1024, 50, 76]) tensor(6.88509317e-06, device='cuda:0')
+backward backbone torch.Size([1, 512, 100, 152]) tensor(3.46221600e-06, device='cuda:0')
+=======backbone param start=======
+Param  0.conv1.weight torch.Size([64, 64, 1, 1]) tensor(0.04031625, device='cuda:0')
+Param  0.bn1.weight torch.Size([64]) tensor(0.18792982, device='cuda:0')
+Param  0.bn1.bias torch.Size([64]) tensor(0.10700530, device='cuda:0')
+Param  0.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01717052, device='cuda:0')
+Param  0.bn2.weight torch.Size([64]) tensor(0.15951559, device='cuda:0')
+Param  0.bn2.bias torch.Size([64]) tensor(0.15806258, device='cuda:0')
+Param  0.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02104857, device='cuda:0')
+Param  0.bn3.weight torch.Size([256]) tensor(0.13135095, device='cuda:0')
+Param  0.bn3.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  0.downsample.0.weight torch.Size([256, 64, 1, 1]) tensor(0.03227273, device='cuda:0')
+Param  0.downsample.1.weight torch.Size([256]) tensor(0.21055111, device='cuda:0')
+Param  0.downsample.1.bias torch.Size([256]) tensor(0.05409847, device='cuda:0')
+Param  1.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02029207, device='cuda:0')
+Param  1.bn1.weight torch.Size([64]) tensor(0.18252781, device='cuda:0')
+Param  1.bn1.bias torch.Size([64]) tensor(0.10809888, device='cuda:0')
+Param  1.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.01964265, device='cuda:0')
+Param  1.bn2.weight torch.Size([64]) tensor(0.18437776, device='cuda:0')
+Param  1.bn2.bias torch.Size([64]) tensor(0.10205423, device='cuda:0')
+Param  1.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.02028941, device='cuda:0')
+Param  1.bn3.weight torch.Size([256]) tensor(0.07960871, device='cuda:0')
+Param  1.bn3.bias torch.Size([256]) tensor(0.03383512, device='cuda:0')
+Param  2.conv1.weight torch.Size([64, 256, 1, 1]) tensor(0.02168545, device='cuda:0')
+Param  2.bn1.weight torch.Size([64]) tensor(0.18254881, device='cuda:0')
+Param  2.bn1.bias torch.Size([64]) tensor(0.08690476, device='cuda:0')
+Param  2.conv2.weight torch.Size([64, 64, 3, 3]) tensor(0.02377797, device='cuda:0')
+Param  2.bn2.weight torch.Size([64]) tensor(0.22176343, device='cuda:0')
+Param  2.bn2.bias torch.Size([64]) tensor(0.06811355, device='cuda:0')
+Param  2.conv3.weight torch.Size([256, 64, 1, 1]) tensor(0.01857198, device='cuda:0')
+Param  2.bn3.weight torch.Size([256]) tensor(0.07720397, device='cuda:0')
+Param  2.bn3.bias torch.Size([256]) tensor(0.03879797, device='cuda:0')
+Param  0.conv1.weight torch.Size([128, 256, 1, 1]) tensor(0.02857316, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([128]) tensor(0.28647897, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([128]) tensor(0.05169163, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01546389, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([128]) tensor(0.27532321, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([128]) tensor(0.04854202, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01621113, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([512]) tensor(0.11582702, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([512]) tensor(0.02419670, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([512, 256, 1, 1]) tensor(0.01294929, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([512]) tensor(0.17906462, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([512]) tensor(0.02419670, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.00994046, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([128]) tensor(0.17250827, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([128]) tensor(0.04931321, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01109803, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([128]) tensor(0.18474647, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([128]) tensor(0.05734140, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01030263, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([512]) tensor(0.06790297, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([512]) tensor(0.02501051, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01501971, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([128]) tensor(0.20659894, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([128]) tensor(0.03763078, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01400416, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([128]) tensor(0.21446377, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([128]) tensor(0.04490084, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01638056, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([512]) tensor(0.09847802, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([512]) tensor(0.04128923, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([128, 512, 1, 1]) tensor(0.01742425, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([128]) tensor(0.21487215, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([128]) tensor(0.04027617, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([128, 128, 3, 3]) tensor(0.01657947, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([128]) tensor(0.23561224, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([128]) tensor(0.04939595, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([512, 128, 1, 1]) tensor(0.01541546, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([512]) tensor(0.08971120, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([512]) tensor(0.04876350, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([256, 512, 1, 1]) tensor(0.02000142, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([256]) tensor(0.27779925, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([256]) tensor(0.07895905, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01125177, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([256]) tensor(0.25722057, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([256]) tensor(0.04740825, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01457589, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([1024]) tensor(0.13831881, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([1024]) tensor(0.01917880, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([1024, 512, 1, 1]) tensor(0.00923943, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([1024]) tensor(0.12366375, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([1024]) tensor(0.01917881, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.00950725, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([256]) tensor(0.19340938, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([256]) tensor(0.03283666, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00973140, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([256]) tensor(0.20867911, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([256]) tensor(0.04312611, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01228248, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([1024]) tensor(0.10113153, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([1024]) tensor(0.04180839, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01052911, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([256]) tensor(0.19641101, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([256]) tensor(0.03550674, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01052153, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([256]) tensor(0.20900920, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([256]) tensor(0.04991354, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01223434, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([1024]) tensor(0.09505977, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([1024]) tensor(0.04010783, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01188206, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.weight torch.Size([256]) tensor(0.20068228, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn1.bias torch.Size([256]) tensor(0.05183817, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01055626, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.weight torch.Size([256]) tensor(0.20403680, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn2.bias torch.Size([256]) tensor(0.04633397, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01158354, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.weight torch.Size([1024]) tensor(0.09007251, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  3.bn3.bias torch.Size([1024]) tensor(0.03990296, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01244256, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.weight torch.Size([256]) tensor(0.20180002, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn1.bias torch.Size([256]) tensor(0.05539192, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.01047687, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.weight torch.Size([256]) tensor(0.20708425, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn2.bias torch.Size([256]) tensor(0.05356362, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01134801, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.weight torch.Size([1024]) tensor(0.08857004, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  4.bn3.bias torch.Size([1024]) tensor(0.05016166, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv1.weight torch.Size([256, 1024, 1, 1]) tensor(0.01265526, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.weight torch.Size([256]) tensor(0.21599689, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn1.bias torch.Size([256]) tensor(0.07059327, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv2.weight torch.Size([256, 256, 3, 3]) tensor(0.00990710, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.weight torch.Size([256]) tensor(0.22124815, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn2.bias torch.Size([256]) tensor(0.05567940, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.conv3.weight torch.Size([1024, 256, 1, 1]) tensor(0.01198903, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.weight torch.Size([1024]) tensor(0.09883372, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  5.bn3.bias torch.Size([1024]) tensor(0.07021689, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv1.weight torch.Size([512, 1024, 1, 1]) tensor(0.01406972, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.weight torch.Size([512]) tensor(0.23997062, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn1.bias torch.Size([512]) tensor(0.10445063, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729501, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.weight torch.Size([512]) tensor(0.22544490, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn2.bias torch.Size([512]) tensor(0.04089326, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00941533, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.weight torch.Size([2048]) tensor(0.21845275, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.bn3.bias torch.Size([2048]) tensor(0.03036084, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.0.weight torch.Size([2048, 1024, 1, 1]) tensor(0.00636626, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.weight torch.Size([2048]) tensor(0.14466563, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  0.downsample.1.bias torch.Size([2048]) tensor(0.03036084, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00871640, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.weight torch.Size([512]) tensor(0.24288183, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn1.bias torch.Size([512]) tensor(0.07773137, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00729162, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.weight torch.Size([512]) tensor(0.23815089, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn2.bias torch.Size([512]) tensor(0.06637169, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00926257, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.weight torch.Size([2048]) tensor(0.21811959, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  1.bn3.bias torch.Size([2048]) tensor(0.03991712, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv1.weight torch.Size([512, 2048, 1, 1]) tensor(0.00922128, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.weight torch.Size([512]) tensor(0.21429402, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn1.bias torch.Size([512]) tensor(0.09717653, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv2.weight torch.Size([512, 512, 3, 3]) tensor(0.00584578, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.weight torch.Size([512]) tensor(0.19329679, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn2.bias torch.Size([512]) tensor(0.05413255, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.conv3.weight torch.Size([2048, 512, 1, 1]) tensor(0.00773860, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.weight torch.Size([2048]) tensor(0.39524287, device='cuda:0', grad_fn=<MeanBackward0>)
+Param  2.bn3.bias torch.Size([2048]) tensor(0.01173810, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone param end=======
+=======backbone start=======
+backbone out:  torch.Size([1, 256, 200, 304]) tensor(0.16510303, device='cuda:0')
+backbone out:  torch.Size([1, 512, 100, 152]) tensor(0.13018613, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 1024, 50, 76]) tensor(0.06210189, device='cuda:0', grad_fn=<MeanBackward0>)
+backbone out:  torch.Size([1, 2048, 25, 38]) tensor(0.03810937, device='cuda:0', grad_fn=<MeanBackward0>)
+=======backbone end=======
+========fpn laterals start=====
+laterals:  torch.Size([1, 256, 100, 152]) tensor(0.16249271, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 50, 76]) tensor(0.13737264, device='cuda:0', grad_fn=<MeanBackward0>)
+laterals:  torch.Size([1, 256, 25, 38]) tensor(0.16689663, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn laterals end=====
+========fpn output start=====
+fpn output:  torch.Size([1, 256, 100, 152]) tensor(0.31187993, device='cuda:0', grad_fn=<MeanBackward0>)2021-08-10 08:32:28,809 - mmdet - INFO - Exp name: gfl_r50_fpn_1x_coco.py
+2021-08-10 08:32:28,809 - mmdet - INFO - Epoch [5][1/1]	lr: 1.072e-02, eta: 0:00:00, time: 2.620, data_time: 2.146, memory: 1682, loss_cls: 0.1446, loss_bbox: 0.1718, loss_dfl: 0.1664, loss: 0.4828
+2021-08-10 08:32:28,851 - mmdet - INFO - Saving checkpoint at 5 epochs
+
+fpn output:  torch.Size([1, 256, 50, 76]) tensor(0.23693599, device='cuda:0', grad_fn=<MeanBackward0>)
+fpn output:  torch.Size([1, 256, 25, 38]) tensor(0.18743537, device='cuda:0', grad_fn=<MeanBackward0>)
+========fpn output end=====
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 100, 152]) tensor(0.16185221, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 100, 152]) tensor(0.20811301, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 50, 76]) tensor(0.16615105, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 50, 76]) tensor(0.20508125, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 25, 38]) tensor(0.16481213, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 25, 38]) tensor(0.20527686, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 13, 19]) tensor(0.17298299, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 13, 19]) tensor(0.21148559, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+======gfl head start======
+cls_feat:  torch.Size([1, 256, 7, 10]) tensor(0.17205960, device='cuda:0', grad_fn=<MeanBackward0>)
+reg_feat:  torch.Size([1, 256, 7, 10]) tensor(0.21540913, device='cuda:0', grad_fn=<MeanBackward0>)
+=====gfl head end======
+=========get target=======
+pos_gt_bboxes:  torch.Size([192, 4]) tensor(609.61004639, device='cuda:0')
+=========get target=======
+======get loss start=======
+pos_decode_bbox_pred:  torch.Size([105, 4]) tensor(74.70908356, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([105, 4]) tensor(74.70980835, device='cuda:0')
+pred_corners:  torch.Size([420, 17]) tensor(3.34076619, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([420]) tensor(3.20019197, device='cuda:0')
+weight_targets:  torch.Size([105]) tensor(0.51495856, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([105]) tensor(0.86176443, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([105]) tensor(0.13823564, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(12.91348839, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([66, 4]) tensor(41.96189880, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([66, 4]) tensor(41.97811127, device='cuda:0')
+pred_corners:  torch.Size([264, 17]) tensor(3.71424484, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([264]) tensor(4.27414894, device='cuda:0')
+weight_targets:  torch.Size([66]) tensor(0.64753866, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([66]) tensor(0.94373870, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([66]) tensor(0.05626139, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(4.26554394, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_pred:  torch.Size([21, 4]) tensor(14.77931786, device='cuda:0', grad_fn=<MeanBackward0>)
+pos_decode_bbox_targets:  torch.Size([21, 4]) tensor(14.82145500, device='cuda:0')
+pred_corners:  torch.Size([84, 17]) tensor(3.67392230, device='cuda:0', grad_fn=<MeanBackward0>)
+target_corners:  torch.Size([84]) tensor(3.28468513, device='cuda:0')
+weight_targets:  torch.Size([21]) tensor(0.65090328, device='cuda:0')
+====== giou start ==========
+miou:  torch.Size([21]) tensor(0.92925990, device='cuda:0', grad_fn=<MeanBackward0>)
+GIoU:  torch.Size([21]) tensor(0.07074013, device='cuda:0', grad_fn=<MeanBackward0>)
+====== giou end ==========
+loss_bbox:  torch.Size([]) tensor(1.80199099, device='cuda:0', grad_fn=<MeanBackward0>)
+======get loss end=======
+backward bbox_reg torch.Size([1, 68, 7, 10]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 7, 10]) tensor(9.32916966e-10, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 13, 19]) tensor(0., device='cuda:0')
+backward cls_logits torch.Size([1, 80, 13, 19]) tensor(6.01063199e-09, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 25, 38]) tensor(9.09530570e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 25, 38]) tensor(4.40234601e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 50, 76]) tensor(6.78539209e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 50, 76]) tensor(2.10779930e-07, device='cuda:0')
+backward bbox_reg torch.Size([1, 68, 100, 152]) tensor(3.68618458e-07, device='cuda:0')
+backward cls_logits torch.Size([1, 80, 100, 152]) tensor(1.48975985e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 7, 10]) tensor(9.04933550e-09, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 13, 19]) tensor(1.04608354e-07, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 25, 38]) tensor(6.18959120e-06, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 50, 76]) tensor(2.97328188e-06, device='cuda:0')
+backward fpn_feats torch.Size([1, 256, 100, 152]) tensor(1.19341780e-06, device='cuda:0')
+backward backbone torch.Size([1, 2048, 25, 38]) tensor(9.42769475e-06, device='cuda:0')
+backward backbone torch.Size([1, 1024, 50, 76]) tensor(5.70099519e-06, device='cuda:0')
+backward backbone torch.Size([1, 512, 100, 152]) tensor(2.80690051e-06, device='cuda:0')

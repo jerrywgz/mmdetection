@@ -4,7 +4,7 @@ _base_ = [
 ]
 model = dict(
     type='GFL',
-    pretrained='torchvision://resnet50',
+    pretrained='../PaddleDetection/gfl_debug_tools/gfl_r50_fpn_1x_coco_20200629_121244-25944287.pth',
     backbone=dict(
         type='ResNet',
         depth=50,
@@ -54,4 +54,4 @@ model = dict(
         nms=dict(type='nms', iou_threshold=0.6),
         max_per_img=100))
 # optimizer
-optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)

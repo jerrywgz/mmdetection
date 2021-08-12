@@ -637,11 +637,23 @@ class ResNet(BaseModule):
             x = self.relu(x)
         x = self.maxpool(x)
         outs = []
+        print('=======backbone param start=======')
         for i, layer_name in enumerate(self.res_layers):
             res_layer = getattr(self, layer_name)
             x = res_layer(x)
             if i in self.out_indices:
                 outs.append(x)
+            for name, p in res_layer.named_parameters():
+                print('Param ', name, p.shape, p.abs().mean())
+
+        print('=======backbone param end=======')
+        print('=======backbone start=======')
+        for out in outs:
+            print('backbone out: ', out.shape, out.abs().mean())
+            # debug backward
+            if out.requires_grad:
+                out.register_hook(lambda grad: print('backward backbone', grad.shape, grad.abs().mean()))
+        print('=======backbone end=======')
         return tuple(outs)
 
     def train(self, mode=True):

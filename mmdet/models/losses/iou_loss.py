@@ -99,6 +99,7 @@ def giou_loss(pred, target, eps=1e-7):
     """
     gious = bbox_overlaps(pred, target, mode='giou', is_aligned=True, eps=eps)
     loss = 1 - gious
+    print('GIoU: ', loss.shape, loss.abs().mean())
     return loss
 
 

@@ -11,7 +11,7 @@ from mmdet.core import (anchor_inside_flags, bbox2distance, bbox_overlaps,
 from ..builder import HEADS, build_loss
 from .anchor_head import AnchorHead
 
-
+torch.set_printoptions(precision=8)
 class Integral(nn.Module):
     """A fixed layer for calculating integral result from distribution.
 
@@ -186,12 +186,21 @@ class GFLHead(AnchorHead):
         """
         cls_feat = x
         reg_feat = x
+        # debug backward
+        x.register_hook(lambda grad: print('backward fpn_feats', grad.shape, grad.abs().mean()))
         for cls_conv in self.cls_convs:
             cls_feat = cls_conv(cls_feat)
         for reg_conv in self.reg_convs:
             reg_feat = reg_conv(reg_feat)
+        print('======gfl head start======')
+        print('cls_feat: ', cls_feat.shape, cls_feat.abs().mean())
+        print('reg_feat: ', reg_feat.shape, reg_feat.abs().mean())
+        print('=====gfl head end======') 
         cls_score = self.gfl_cls(cls_feat)
         bbox_pred = scale(self.gfl_reg(reg_feat)).float()
+        # debug backward
+        cls_score.register_hook(lambda grad: print('backward cls_logits', grad.shape, grad.abs().mean()))
+        bbox_pred.register_hook(lambda grad: print('backward bbox_reg', grad.shape, grad.abs().mean()))
         return cls_score, bbox_pred
 
     def anchor_center(self, anchors):
@@ -269,13 +278,20 @@ class GFLHead(AnchorHead):
                                            pos_decode_bbox_targets,
                                            self.reg_max).reshape(-1)
 
+            print('pos_decode_bbox_pred: ', pos_decode_bbox_pred.shape, pos_decode_bbox_pred.abs().mean())
+            print('pos_decode_bbox_targets: ', pos_decode_bbox_targets.shape, pos_decode_bbox_targets.abs().mean())
+            print('pred_corners: ', pred_corners.shape, pred_corners.abs().mean())
+            print('target_corners: ', target_corners.shape, target_corners.abs().mean())
+            print('weight_targets: ', weight_targets.shape, weight_targets.abs().mean()) 
             # regression loss
+            print('====== giou start ==========')
             loss_bbox = self.loss_bbox(
                 pos_decode_bbox_pred,
                 pos_decode_bbox_targets,
                 weight=weight_targets,
                 avg_factor=1.0)
-
+            print('====== giou end ==========')
+            print('loss_bbox: ', loss_bbox.shape, loss_bbox.abs().mean())
             # dfl loss
             loss_dfl = self.loss_dfl(
                 pred_corners,
@@ -350,6 +366,7 @@ class GFLHead(AnchorHead):
                          device=device)).item()
         num_total_samples = max(num_total_samples, 1.0)
 
+        print('======get loss start=======')
         losses_cls, losses_bbox, losses_dfl,\
             avg_factor = multi_apply(
                 self.loss_single,
@@ -361,6 +378,7 @@ class GFLHead(AnchorHead):
                 bbox_targets_list,
                 self.anchor_generator.strides,
                 num_total_samples=num_total_samples)
+        print('======get loss end=======')
 
         avg_factor = sum(avg_factor)
         avg_factor = reduce_mean(avg_factor).clamp_(min=1).item()
@@ -413,6 +431,7 @@ class GFLHead(AnchorHead):
 
         mlvl_bboxes = []
         mlvl_scores = []
+        print('=====get singe bbox start=======')
         for cls_score, bbox_pred, stride, anchors in zip(
                 cls_scores, bbox_preds, self.anchor_generator.strides,
                 mlvl_anchors):
@@ -420,6 +439,7 @@ class GFLHead(AnchorHead):
             assert stride[0] == stride[1]
             scores = cls_score.permute(0, 2, 3, 1).reshape(
                 batch_size, -1, self.cls_out_channels).sigmoid()
+            print('scores: ', scores.shape, scores.abs().mean())
             bbox_pred = bbox_pred.permute(0, 2, 3, 1)
 
             bbox_pred = self.integral(bbox_pred) * stride[0]
@@ -436,12 +456,12 @@ class GFLHead(AnchorHead):
                 scores = scores[batch_inds, topk_inds, :]
             else:
                 anchors = anchors.expand_as(bbox_pred)
-
             bboxes = distance2bbox(
                 self.anchor_center(anchors), bbox_pred, max_shape=img_shapes)
             mlvl_bboxes.append(bboxes)
             mlvl_scores.append(scores)
 
+        print('=====get singe bbox end=======')
         batch_mlvl_bboxes = torch.cat(mlvl_bboxes, dim=1)
         if rescale:
             batch_mlvl_bboxes /= batch_mlvl_bboxes.new_tensor(
@@ -454,6 +474,10 @@ class GFLHead(AnchorHead):
         padding = batch_mlvl_scores.new_zeros(batch_size,
                                               batch_mlvl_scores.shape[1], 1)
         batch_mlvl_scores = torch.cat([batch_mlvl_scores, padding], dim=-1)
+        print('======decode start========')
+        print('batch_mlvl_bboxes: ', batch_mlvl_bboxes.shape, batch_mlvl_bboxes.abs().mean())
+        print('batch_mlvl_scores: ', batch_mlvl_scores.shape, batch_mlvl_scores.abs().mean())
+        print('======decode end========')
 
         if with_nms:
             det_results = []
@@ -610,6 +634,9 @@ class GFLHead(AnchorHead):
         neg_inds = sampling_result.neg_inds
         if len(pos_inds) > 0:
             pos_bbox_targets = sampling_result.pos_gt_bboxes
+            print('=========get target=======')
+            print('pos_gt_bboxes: ', pos_bbox_targets.shape, pos_bbox_targets.abs().mean())
+            print('=========get target=======')
             bbox_targets[pos_inds, :] = pos_bbox_targets
             bbox_weights[pos_inds, :] = 1.0
             if gt_labels is None:
